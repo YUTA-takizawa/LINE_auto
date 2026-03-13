@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#1a1a2e">
+<title>QuickMsg</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'> </text></svg>">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  :root {
+    --bg: #0f0f1a;
+    --surface: #1a1a2e;
+    --home: #4ade80;
+    --rice: #fb923c;
+    --bath: #60a5fa;
+    --phone: #f472b6;
+    --text: #e2e8f0;
+    --muted: #64748b;
+  }
+  body {
+    font-family: 'Noto Sans JP', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 20px;
+    overflow: hidden;
+  }
+  .header {
+    text-align: center;
+    margin-bottom: 36px;
+  }
+  .header h1 {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+  .header .time {
+    font-size: 42px;
+    font-weight: 700;
+    margin-top: 4px;
+    font-variant-numeric: tabular-nums;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    width: 100%;
+    max-width: 360px;
+  }
+  .btn {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 28px 16px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  .btn:active {
+    transform: scale(0.93);
+  }
+  .btn .icon {
+    font-size: 36px;
+    line-height: 1;
+  }
+  .btn .label {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+  .btn-home {
+    background: linear-gradient(135deg, #065f46, #059669);
+    color: #d1fae5;
+    box-shadow: 0 4px 24px rgba(74, 222, 128, 0.2);
+  }
+  .btn-home:active { box-shadow: 0 2px 12px rgba(74, 222, 128, 0.3); }
+  .btn-rice {
+    background: linear-gradient(135deg, #9a3412, #ea580c);
+    color: #fed7aa;
+    box-shadow: 0 4px 24px rgba(251, 146, 60, 0.2);
+  }
+  .btn-rice:active { box-shadow: 0 2px 12px rgba(251, 146, 60, 0.3); }
+  .btn-bath {
+    background: linear-gradient(135deg, #1e3a5f, #2563eb);
+    color: #bfdbfe;
+    box-shadow: 0 4px 24px rgba(96, 165, 250, 0.2);
+  }
+  .btn-bath:active { box-shadow: 0 2px 12px rgba(96, 165, 250, 0.3); }
+  .btn-phone {
+    background: linear-gradient(135deg, #831843, #db2777);
+    color: #fce7f3;
+    box-shadow: 0 4px 24px rgba(244, 114, 182, 0.2);
+  }
+  .btn-phone:active { box-shadow: 0 2px 12px rgba(244, 114, 182, 0.3); }
+  .preview {
+    margin-top: 28px;
+    text-align: center;
+    min-height: 48px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  .preview .tag {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .preview .msg {
+    font-size: 15px;
+    color: var(--text);
+    padding: 8px 20px;
+    background: var(--surface);
+    border-radius: 12px;
+    transition: opacity 0.2s;
+    max-width: 300px;
+  }
+  .footer {
+    margin-top: 32px;
+    font-size: 11px;
+    color: var(--muted);
+    text-align: center;
+    line-height: 1.6;
+  }
+  /* 送信後フィードバック */
+  .sent-toast {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.8);
+    background: rgba(0,0,0,0.85);
+    color: #fff;
+    padding: 20px 32px;
+    border-radius: 16px;
+    font-size: 16px;
+    font-weight: 700;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s ease;
+    z-index: 100;
+  }
+  .sent-toast.show {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  /* 「あと○分」スライダー */
+  .phone-sub {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    margin-top: 16px;
+    width: 100%;
+    max-width: 360px;
+  }
+  .phone-sub.active { display: flex; }
+  .phone-sub .mins-display {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--phone);
+  }
+  .phone-sub input[type=range] {
+    width: 80%;
+    accent-color: var(--phone);
+    height: 6px;
+  }
+  .phone-sub .send-phone {
+    background: linear-gradient(135deg, #831843, #db2777);
+    color: #fce7f3;
+    border: none;
+    padding: 12px 40px;
+    border-radius: 14px;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.15s;
+  }
+  .phone-sub .send-phone:active { transform: scale(0.95); }
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>QuickMsg</h1>
+  <div class="time" id="clock">--:--</div>
+</div>
+<div class="grid">
+  <button class="btn btn-home" onclick="send('home')">
+    <span class="icon"> </span>
+    <span class="label">帰宅</span>
+  </button>
+  <button class="btn btn-rice" onclick="send('rice')">
+    <span class="icon"> </span>
+    <span class="label">ご飯</span>
+  </button>
+  <button class="btn btn-bath" onclick="send('bath')">
+    <span class="icon"> </span>
+    <span class="label">お風呂</span>
+  </button>
+  <button class="btn btn-phone" onclick="togglePhone()">
+    <span class="icon"> </span>
+    <span class="label">あと○分</span>
+  </button>
+</div>
+<div class="phone-sub" id="phoneSub">
+  <div class="mins-display"><span id="minsVal">10</span>分</div>
+  <input type="range" min="5" max="60" step="5" value="10" oninput="updateMins(this.value)">
+  <button class="send-phone" onclick="sendPhone()">この時間で送る</button>
+</div>
+<div class="preview" id="preview">
+  <div class="tag">プレビュー</div>
+  <div class="msg" id="previewMsg">ボタンを押してね</div>
+</div>
+<div class="sent-toast" id="toast">LINEを開きます</div>
+<div class="footer">
+  ボタン → ランダムメッセージ → LINE送信画面<br>
+  ※送信ボタンは自分で押してね
+</div>
+<script>
+// ===== メッセージバリエーション =====
+const messages = {
+  home: [
+    "今帰ったよ?",
+    "ただいま！やっと着いた",
+    "帰ったよ?疲れた",
+    "いま帰った！",
+    "やっと家ついた?",
+    "ただいま?遅くなってごめん",
+    "帰宅！おつかれさま",
+    "いま着いたとこ！",
+    "帰ってきたよ?",
+    "ただいま、遅くなった",
+    "やっとついたわ",
+    "いま帰り?",
+  ],
+  rice: [
+    "ご飯食べてるよ?",
+    "いまご飯中！",
+    "ちょっとご飯食べてくるね",
+    "ご飯たべてる?",
+    "いまご飯たべてる！ちょっと待ってて",
+    "ご飯中?食べたら連絡する",
+    "ごはん食べてくる！",
+    "いまからご飯?",
+    "ご飯食べてるから少し待ってね",
+    "腹ごしらえ中?",
+    "飯食ってる！あとで連絡する",
+    "ご飯中、もうちょいで食べ終わる",
+  ],
+  bath: [
+    "お風呂入ってくるね?",
+    "ちょっとシャワー浴びてくる！",
+    "お風呂いってくる?",
+    "風呂入ってくる！",
+    "さっぱりしてくるわ?",
+    "お風呂入ってくる、出たら連絡する！",
+    "シャワーしてくるね",
+    "ちょっとお風呂タイム",
+    "お風呂入ってくる?あとでね",
+    "風呂いってきます！",
+    "さくっとシャワーしてくる",
+    "お風呂はいってくるね、すぐ出る！",
+  ],
+  phone: [
+    "あと{min}分くらいで電話できるよ！",
+    "あと{min}分くらいで大丈夫！",
+    "{min}分後くらいに電話するね?",
+    "あと{min}分待ってて！",
+    "もうちょいで終わる！{min}分くらい",
+    "{min}分後に電話するね",
+    "あと{min}分くらいかな、待ってて?",
+    "もう少しで電話できる！あと{min}分",
+    "{min}分くらいで電話する?",
+    "あと{min}分で落ち着くから待ってて！",
+  ],
+};
+// ===== 重複防止: 直前のメッセージを記録 =====
+const lastUsed = {};
+function pickRandom(category, mins) {
+  const pool = messages[category];
+  let msg;
+  let attempts = 0;
+  do {
+    msg = pool[Math.floor(Math.random() * pool.length)];
+    attempts++;
+  } while (msg === lastUsed[category] && attempts < 10);
+  lastUsed[category] = msg;
+  if (mins) {
+    msg = msg.replace(/{min}/g, mins);
+  }
+  return msg;
+}
+// ===== LINE URLスキームで送信 =====
+function openLINE(text) {
+  const encoded = encodeURIComponent(text);
+  // line://msg/text/ は LINEアプリを開いてテキスト入力済みの送信先選択画面を表示
+  window.location.href = `line://msg/text/${encoded}`;
+}
+// ===== 送信処理 =====
+function send(category) {
+  // 電話サブメニューを閉じる
+  document.getElementById('phoneSub').classList.remove('active');
+  const msg = pickRandom(category);
+  showPreview(msg);
+  showToast();
+  setTimeout(() => openLINE(msg), 400);
+}
+// ===== 電話ボタン =====
+let phoneOpen = false;
+function togglePhone() {
+  phoneOpen = !phoneOpen;
+  const sub = document.getElementById('phoneSub');
+  sub.classList.toggle('active', phoneOpen);
+  if (phoneOpen) {
+    updatePreviewPhone();
+  }
+}
+function updateMins(val) {
+  document.getElementById('minsVal').textContent = val;
+  updatePreviewPhone();
+}
+function updatePreviewPhone() {
+  const mins = document.getElementById('minsVal').textContent;
+  const msg = pickRandom('phone', mins);
+  showPreview(msg);
+}
+function sendPhone() {
+  const mins = document.getElementById('minsVal').textContent;
+  const msg = pickRandom('phone', mins);
+  showPreview(msg);
+  showToast();
+  setTimeout(() => openLINE(msg), 400);
+}
+// ===== UI =====
+function showPreview(msg) {
+  document.getElementById('previewMsg').textContent = msg;
+}
+function showToast() {
+  const toast = document.getElementById('toast');
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 1200);
+}
+// ===== 時計 =====
+function updateClock() {
+  const now = new Date();
+  const h = String(now.getHours()).padStart(2, '0');
+  const m = String(now.getMinutes()).padStart(2, '0');
+  document.getElementById('clock').textContent = `${h}:${m}`;
+}
+updateClock();
+setInterval(updateClock, 10000);
+</script>
+</body>
+</html>
