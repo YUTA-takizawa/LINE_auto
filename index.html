@@ -34,57 +34,59 @@
   /* ===== ヘッダー ===== */
   .header {
     text-align: center;
-    margin-bottom: 36px;
+    margin-bottom: 32px;
     position: relative;
     width: 100%;
     max-width: 360px;
   }
   .header h1 {
-    font-size: 18px;
+    font-size: 13px;
     font-weight: 700;
-    letter-spacing: 2px;
+    letter-spacing: 3px;
     color: var(--muted);
     text-transform: uppercase;
   }
   .header .time {
-    font-size: 42px;
+    font-size: 52px;
     font-weight: 700;
-    margin-top: 4px;
+    margin-top: 2px;
     font-variant-numeric: tabular-nums;
+    line-height: 1.1;
   }
   .settings-btn {
     position: absolute;
     top: 0;
     right: 0;
     background: none;
-    border: none;
-    font-size: 22px;
+    border: 1.5px solid #2d2d45;
+    border-radius: 10px;
+    font-size: 18px;
     color: var(--muted);
     cursor: pointer;
-    padding: 4px;
+    padding: 6px 8px;
     line-height: 1;
-    transition: color 0.2s;
+    transition: color 0.2s, border-color 0.2s;
   }
-  .settings-btn:hover, .settings-btn.active { color: var(--text); }
+  .settings-btn:hover, .settings-btn.active { color: var(--text); border-color: var(--muted); }
   .recipient-badge {
     display: inline-block;
-    margin-top: 6px;
+    margin-top: 8px;
     font-size: 12px;
     color: #4ade80;
     background: rgba(74,222,128,0.1);
-    padding: 2px 10px;
+    padding: 3px 12px;
     border-radius: 20px;
     letter-spacing: 0.5px;
   }
   .recipient-badge.none {
     color: var(--muted);
-    background: rgba(100,116,139,0.1);
+    background: rgba(100,116,139,0.08);
   }
   /* ===== グリッド ===== */
   .grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 16px;
+    gap: 14px;
     width: 100%;
     max-width: 360px;
   }
@@ -95,16 +97,26 @@
     align-items: center;
     justify-content: center;
     gap: 10px;
-    padding: 28px 16px;
+    padding: 32px 16px;
     border: none;
-    border-radius: 20px;
+    border-radius: 22px;
     cursor: pointer;
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
     -webkit-user-select: none;
     user-select: none;
+    overflow: hidden;
   }
-  .btn:active { transform: scale(0.93); }
-  .btn .icon { font-size: 36px; line-height: 1; }
+  .btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255,255,255,0);
+    border-radius: inherit;
+    transition: background 0.1s;
+  }
+  .btn:active { transform: scale(0.91); filter: brightness(1.15); }
+  .btn:active::after { background: rgba(255,255,255,0.08); }
+  .btn .icon { font-size: 38px; line-height: 1; }
   .btn .label {
     font-family: 'Noto Sans JP', sans-serif;
     font-size: 15px;
@@ -112,80 +124,83 @@
     letter-spacing: 0.5px;
   }
   .btn-home {
-    background: linear-gradient(135deg, #065f46, #059669);
+    background: linear-gradient(145deg, #065f46, #059669);
     color: #d1fae5;
-    box-shadow: 0 4px 24px rgba(74,222,128,0.2);
+    box-shadow: 0 4px 20px rgba(74,222,128,0.18), 0 1px 4px rgba(0,0,0,0.3);
   }
-  .btn-home:active { box-shadow: 0 2px 12px rgba(74,222,128,0.3); }
   .btn-rice {
-    background: linear-gradient(135deg, #9a3412, #ea580c);
+    background: linear-gradient(145deg, #9a3412, #ea580c);
     color: #fed7aa;
-    box-shadow: 0 4px 24px rgba(251,146,60,0.2);
+    box-shadow: 0 4px 20px rgba(251,146,60,0.18), 0 1px 4px rgba(0,0,0,0.3);
   }
-  .btn-rice:active { box-shadow: 0 2px 12px rgba(251,146,60,0.3); }
   .btn-bath {
-    background: linear-gradient(135deg, #1e3a5f, #2563eb);
+    background: linear-gradient(145deg, #1e3a5f, #2563eb);
     color: #bfdbfe;
-    box-shadow: 0 4px 24px rgba(96,165,250,0.2);
+    box-shadow: 0 4px 20px rgba(96,165,250,0.18), 0 1px 4px rgba(0,0,0,0.3);
   }
-  .btn-bath:active { box-shadow: 0 2px 12px rgba(96,165,250,0.3); }
   .btn-phone {
-    background: linear-gradient(135deg, #831843, #db2777);
+    background: linear-gradient(145deg, #831843, #db2777);
     color: #fce7f3;
-    box-shadow: 0 4px 24px rgba(244,114,182,0.2);
+    box-shadow: 0 4px 20px rgba(244,114,182,0.18), 0 1px 4px rgba(0,0,0,0.3);
   }
-  .btn-phone:active { box-shadow: 0 2px 12px rgba(244,114,182,0.3); }
   /* ===== プレビュー ===== */
   .preview {
-    margin-top: 28px;
-    text-align: center;
-    min-height: 48px;
+    margin-top: 24px;
+    width: 100%;
+    max-width: 360px;
+    min-height: 56px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 4px;
+    gap: 5px;
   }
   .preview .tag {
-    font-size: 11px;
+    font-size: 10px;
     color: var(--muted);
-    letter-spacing: 1px;
+    letter-spacing: 1.5px;
     text-transform: uppercase;
   }
   .preview .msg {
-    font-size: 15px;
+    font-size: 14px;
     color: var(--text);
-    padding: 8px 20px;
+    padding: 10px 20px;
     background: var(--surface);
-    border-radius: 12px;
-    max-width: 300px;
+    border-radius: 14px;
+    border: 1px solid #2a2a40;
+    width: 100%;
+    text-align: center;
+    line-height: 1.5;
+    transition: opacity 0.2s;
   }
   /* ===== フッター ===== */
   .footer {
-    margin-top: 32px;
+    margin-top: 20px;
     font-size: 11px;
     color: var(--muted);
     text-align: center;
-    line-height: 1.6;
+    opacity: 0.7;
   }
   /* ===== トースト ===== */
   .sent-toast {
     position: fixed;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%) scale(0.8);
-    background: rgba(0,0,0,0.85);
+    transform: translate(-50%, -50%) scale(0.85);
+    background: rgba(10,10,20,0.92);
     color: #fff;
-    padding: 20px 32px;
-    border-radius: 16px;
-    font-size: 16px;
+    padding: 18px 30px;
+    border-radius: 18px;
+    font-size: 15px;
     font-weight: 700;
     opacity: 0;
     pointer-events: none;
-    transition: all 0.3s ease;
+    transition: all 0.25s ease;
     z-index: 100;
     text-align: center;
-    line-height: 1.5;
+    line-height: 1.6;
     max-width: 280px;
+    border: 1px solid rgba(255,255,255,0.1);
+    backdrop-filter: blur(8px);
   }
   .sent-toast.show {
     opacity: 1;
@@ -197,34 +212,54 @@
     flex-direction: column;
     align-items: center;
     gap: 12px;
-    margin-top: 16px;
+    margin-top: 14px;
     width: 100%;
     max-width: 360px;
+    background: var(--surface);
+    border-radius: 18px;
+    padding: 18px 20px;
+    border: 1px solid #2a2a40;
   }
   .phone-sub.active { display: flex; }
-  .phone-sub .mins-display {
-    font-size: 28px;
+  .phone-sub .mins-row {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+  }
+  .phone-sub .mins-num {
+    font-size: 36px;
     font-weight: 700;
     color: var(--phone);
+    font-variant-numeric: tabular-nums;
+    min-width: 52px;
+    text-align: right;
+  }
+  .phone-sub .mins-unit {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--phone);
+    opacity: 0.8;
   }
   .phone-sub input[type=range] {
-    width: 80%;
+    width: 100%;
     accent-color: var(--phone);
     height: 6px;
+    cursor: pointer;
   }
   .phone-sub .send-phone {
     background: linear-gradient(135deg, #831843, #db2777);
     color: #fce7f3;
     border: none;
-    padding: 12px 40px;
+    padding: 14px 0;
+    width: 100%;
     border-radius: 14px;
     font-family: 'Noto Sans JP', sans-serif;
     font-size: 15px;
     font-weight: 700;
     cursor: pointer;
-    transition: transform 0.15s;
+    transition: transform 0.12s;
   }
-  .phone-sub .send-phone:active { transform: scale(0.95); }
+  .phone-sub .send-phone:active { transform: scale(0.96); }
   /* ===== 設定モーダル ===== */
   .modal-overlay {
     display: none;
@@ -242,7 +277,7 @@
     max-width: 480px;
     border-radius: 24px 24px 0 0;
     padding: 28px 24px 40px;
-    animation: slideUp 0.3s ease;
+    animation: slideUp 0.28s ease;
   }
   @keyframes slideUp {
     from { transform: translateY(100%); }
@@ -296,7 +331,7 @@
     font-size: 15px;
     font-weight: 700;
     cursor: pointer;
-    transition: transform 0.15s;
+    transition: transform 0.12s;
   }
   .modal-btns button:active { transform: scale(0.96); }
   .btn-cancel {
@@ -335,7 +370,10 @@
   </button>
 </div>
 <div class="phone-sub" id="phoneSub">
-  <div class="mins-display"><span id="minsVal">10</span>分</div>
+  <div class="mins-row">
+    <span class="mins-num" id="minsVal">10</span>
+    <span class="mins-unit">分</span>
+  </div>
   <input type="range" min="5" max="60" step="5" value="10" oninput="updateMins(this.value)">
   <button class="send-phone" onclick="sendPhone()">この時間で送る</button>
 </div>
@@ -343,11 +381,8 @@
   <div class="tag">プレビュー</div>
   <div class="msg" id="previewMsg">ボタンを押してね</div>
 </div>
+<div class="footer" id="footerText">ボタン → ランダムメッセージ → LINE送信画面</div>
 <div class="sent-toast" id="toast"></div>
-<div class="footer" id="footerText">
-  ボタン → ランダムメッセージ → LINE送信画面<br>
-  ※送信ボタンは自分で押してね
-</div>
 
 <!-- 設定モーダル -->
 <div class="modal-overlay" id="modalOverlay" onclick="closeOnOverlay(event)">
@@ -383,6 +418,12 @@ const messages = {
     "ただいま、遅くなった",
     "やっとついたわ",
     "いま帰り😊",
+    "無事帰ったよ！",
+    "今日もお疲れ！帰ったよ🏠",
+    "帰宅〜！眠い",
+    "家ついた、ほっとした",
+    "いま玄関入ったとこ🏠",
+    "帰ってきた！ご飯食べた？",
   ],
   rice: [
     "ご飯食べてるよ🍚",
@@ -397,6 +438,12 @@ const messages = {
     "腹ごしらえ中😋",
     "飯食ってる！あとで連絡する",
     "ご飯中、もうちょいで食べ終わる",
+    "ちょっと食べてくるね🍚",
+    "めし中！すぐ連絡する",
+    "いまごはん！終わったら連絡するね",
+    "ご飯タイム😋",
+    "ちょうどご飯食べてたとこ🍚",
+    "食事中なのでちょっと待ってて",
   ],
   bath: [
     "お風呂入ってくるね🛁",
@@ -411,6 +458,12 @@ const messages = {
     "風呂いってきます！",
     "さくっとシャワーしてくる",
     "お風呂はいってくるね、すぐ出る！",
+    "風呂タイム！出たらすぐ連絡する",
+    "シャワー浴びてくる、ちょっと待ってて",
+    "お風呂！終わったら連絡するね🛁",
+    "さっと風呂入ってくる",
+    "シャワー中ね、すぐ出る！",
+    "お風呂いってくる😊待ってて",
   ],
   phone: [
     "あと{min}分くらいで電話できるよ！",
@@ -423,8 +476,17 @@ const messages = {
     "もう少しで電話できる！あと{min}分",
     "{min}分くらいで電話する😊",
     "あと{min}分で落ち着くから待ってて！",
+    "もう少し！{min}分くらいで電話する",
+    "あとちょっと！{min}分待ってて😊",
+    "{min}分後に絶対電話する！",
+    "あと{min}分だけ待ってて〜！",
   ],
 };
+
+// ===== バイブレーション =====
+function vibrate() {
+  if (navigator.vibrate) navigator.vibrate(40);
+}
 
 // ===== 重複防止 =====
 const lastUsed = {};
@@ -452,11 +514,11 @@ function updateBadge() {
   if (id) {
     badge.textContent = `→ ${id}`;
     badge.className = 'recipient-badge';
-    footer.innerHTML = 'ボタン → コピー＆チャットを開く<br>貼り付けて送信ボタンを押してね';
+    footer.textContent = 'ボタン → コピー＆チャットを開く';
   } else {
     badge.textContent = '送信先未設定';
     badge.className = 'recipient-badge none';
-    footer.innerHTML = 'ボタン → ランダムメッセージ → LINE送信画面<br>※送信ボタンは自分で押してね';
+    footer.textContent = 'ボタン → ランダムメッセージ → LINE送信画面';
   }
 }
 function openSettings() {
@@ -480,7 +542,6 @@ function closeOnOverlay(e) {
 function openLINE(text) {
   const lineId = getLineId();
   if (lineId) {
-    // クリップボードにコピーして特定チャットを開く
     navigator.clipboard.writeText(text).catch(() => {});
     const toastEl = document.getElementById('toast');
     toastEl.innerHTML = '📋 コピーしました！<br><small>貼り付けて送信してね</small>';
@@ -489,7 +550,6 @@ function openLINE(text) {
       window.location.href = `line://ti/p/${lineId}`;
     }, 600);
   } else {
-    // 送信先未設定: 従来通り
     const toastEl = document.getElementById('toast');
     toastEl.textContent = 'LINEを開きます';
     showToast();
@@ -501,6 +561,7 @@ function openLINE(text) {
 
 // ===== 送信処理 =====
 function send(category) {
+  vibrate();
   document.getElementById('phoneSub').classList.remove('active');
   phoneOpen = false;
   const msg = pickRandom(category);
@@ -511,6 +572,7 @@ function send(category) {
 // ===== 電話ボタン =====
 let phoneOpen = false;
 function togglePhone() {
+  vibrate();
   phoneOpen = !phoneOpen;
   document.getElementById('phoneSub').classList.toggle('active', phoneOpen);
   if (phoneOpen) updatePreviewPhone();
@@ -525,6 +587,7 @@ function updatePreviewPhone() {
   showPreview(msg);
 }
 function sendPhone() {
+  vibrate();
   const mins = document.getElementById('minsVal').textContent;
   const msg = pickRandom('phone', mins);
   showPreview(msg);
@@ -533,7 +596,12 @@ function sendPhone() {
 
 // ===== UI =====
 function showPreview(msg) {
-  document.getElementById('previewMsg').textContent = msg;
+  const el = document.getElementById('previewMsg');
+  el.style.opacity = '0';
+  setTimeout(() => {
+    el.textContent = msg;
+    el.style.opacity = '1';
+  }, 100);
 }
 function showToast() {
   const toast = document.getElementById('toast');
