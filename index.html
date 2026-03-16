@@ -143,6 +143,16 @@
     color: #fce7f3;
     box-shadow: 0 4px 20px rgba(244,114,182,0.18), 0 1px 4px rgba(0,0,0,0.3);
   }
+  .btn-dryer {
+    background: linear-gradient(145deg, #4c1d95, #7c3aed);
+    color: #ede9fe;
+    box-shadow: 0 4px 20px rgba(167,139,250,0.18), 0 1px 4px rgba(0,0,0,0.3);
+  }
+  .btn-train {
+    background: linear-gradient(145deg, #1e3a5f, #0369a1);
+    color: #e0f2fe;
+    box-shadow: 0 4px 20px rgba(56,189,248,0.18), 0 1px 4px rgba(0,0,0,0.3);
+  }
   /* ===== プレビュー ===== */
   .preview {
     margin-top: 24px;
@@ -368,6 +378,14 @@
     <span class="icon">⏱️</span>
     <span class="label">あと○分</span>
   </button>
+  <button class="btn btn-dryer" onclick="send('dryer')">
+    <span class="icon">💨</span>
+    <span class="label">ドライヤー</span>
+  </button>
+  <button class="btn btn-train" onclick="send('train')">
+    <span class="icon">🚃</span>
+    <span class="label">電車</span>
+  </button>
 </div>
 <div class="phone-sub" id="phoneSub">
   <div class="mins-row">
@@ -480,6 +498,32 @@ const messages = {
     "あとちょっと！{min}分待ってて",
     "{min}分後に絶対電話する！",
     "あと{min}分だけ待ってて〜！",
+  ],
+  dryer: [
+    "ドライヤーかけてるから少し待ってて",
+    "いまドライヤー中、終わったら連絡する",
+    "ドライヤー中なので返信遅れる！",
+    "髪乾かしてる、もうちょいで終わる",
+    "ドライヤーしてるからちょっと待ってて",
+    "いまドライヤーかけてる、すぐ終わる",
+    "髪乾かし中！終わったら連絡するね",
+    "ドライヤー中につき返信遅れます",
+    "いまドライヤーしてる、待ってて",
+    "ちょっとドライヤー中、すぐ終わる！",
+  ],
+  train: [
+    "いま電車乗った！",
+    "電車乗ったよ",
+    "いまから電車、着いたら連絡する",
+    "電車に乗ったとこ",
+    "乗車した！着いたら連絡するね",
+    "いま電車、しばらく揺れてる",
+    "電車乗ったからもうすぐ着く",
+    "電車に乗りました",
+    "いま電車の中、着いたら連絡する！",
+    "乗った！着いたら連絡するね",
+    "電車乗ったよ、あと少しで着く",
+    "いまから電車乗る！",
   ],
 };
 
