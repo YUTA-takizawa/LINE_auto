@@ -155,14 +155,13 @@
   }
   /* ===== プレビュー ===== */
   .preview {
-    margin-top: 24px;
+    margin-top: 20px;
     width: 100%;
     max-width: 360px;
-    min-height: 56px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 5px;
+    gap: 8px;
   }
   .preview .tag {
     font-size: 10px;
@@ -171,20 +170,55 @@
     text-transform: uppercase;
   }
   .preview .msg {
-    font-size: 14px;
+    font-size: 15px;
     color: var(--text);
-    padding: 10px 20px;
+    padding: 14px 20px;
     background: var(--surface);
-    border-radius: 14px;
-    border: 1px solid #2a2a40;
+    border-radius: 16px;
+    border: 1.5px solid #2a2a40;
     width: 100%;
     text-align: center;
-    line-height: 1.5;
-    transition: opacity 0.2s;
+    line-height: 1.6;
+    transition: opacity 0.15s, border-color 0.2s;
+    cursor: pointer;
+    -webkit-user-select: none;
+    user-select: none;
   }
+  .preview .msg.tappable {
+    border-color: #3d3d5c;
+  }
+  .preview .msg.tappable:active {
+    opacity: 0.7;
+  }
+  .preview .hint {
+    font-size: 11px;
+    color: var(--muted);
+    display: none;
+  }
+  .preview .hint.visible {
+    display: block;
+  }
+  .send-line-btn {
+    display: none;
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, #06b6d4, #0891b2);
+    color: #fff;
+    border: none;
+    border-radius: 16px;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: transform 0.12s, filter 0.12s;
+    box-shadow: 0 4px 20px rgba(6,182,212,0.25);
+  }
+  .send-line-btn.visible { display: block; }
+  .send-line-btn:active { transform: scale(0.97); filter: brightness(1.1); }
   /* ===== フッター ===== */
   .footer {
-    margin-top: 20px;
+    margin-top: 16px;
     font-size: 11px;
     color: var(--muted);
     text-align: center;
@@ -362,15 +396,15 @@
   <button class="settings-btn" onclick="openSettings()" title="設定">⚙️</button>
 </div>
 <div class="grid">
-  <button class="btn btn-home" onclick="send('home')">
+  <button class="btn btn-home" onclick="selectCategory('home')">
     <span class="icon">🏠</span>
     <span class="label">帰宅</span>
   </button>
-  <button class="btn btn-rice" onclick="send('rice')">
+  <button class="btn btn-rice" onclick="selectCategory('rice')">
     <span class="icon">🍚</span>
     <span class="label">ご飯</span>
   </button>
-  <button class="btn btn-bath" onclick="send('bath')">
+  <button class="btn btn-bath" onclick="selectCategory('bath')">
     <span class="icon">🛁</span>
     <span class="label">お風呂</span>
   </button>
@@ -378,11 +412,11 @@
     <span class="icon">⏱️</span>
     <span class="label">あと○分</span>
   </button>
-  <button class="btn btn-dryer" onclick="send('dryer')">
+  <button class="btn btn-dryer" onclick="selectCategory('dryer')">
     <span class="icon">💨</span>
     <span class="label">ドライヤー</span>
   </button>
-  <button class="btn btn-train" onclick="send('train')">
+  <button class="btn btn-train" onclick="selectCategory('train')">
     <span class="icon">🚃</span>
     <span class="label">電車</span>
   </button>
@@ -393,13 +427,15 @@
     <span class="mins-unit">分</span>
   </div>
   <input type="range" min="5" max="60" step="5" value="10" oninput="updateMins(this.value)">
-  <button class="send-phone" onclick="sendPhone()">この時間で送る</button>
+  <button class="send-phone" onclick="confirmPhone()">この時間で送る</button>
 </div>
-<div class="preview" id="preview">
-  <div class="tag">プレビュー</div>
-  <div class="msg" id="previewMsg">ボタンを押してね</div>
+<div class="preview">
+  <div class="tag" id="previewTag">プレビュー</div>
+  <div class="msg" id="previewMsg" onclick="cycleMsg()">ボタンを押してね</div>
+  <div class="hint" id="previewHint">タップで別のメッセージに変更</div>
+  <button class="send-line-btn" id="sendLineBtn" onclick="doSend()">LINEで送る</button>
 </div>
-<div class="footer" id="footerText">ボタン → ランダムメッセージ → LINE送信画面</div>
+<div class="footer">ボタン → メッセージ確認 → LINEで送る</div>
 <div class="sent-toast" id="toast"></div>
 
 <!-- 設定モーダル -->
@@ -547,6 +583,49 @@ function pickRandom(category, mins) {
   return msg;
 }
 
+// ===== 選択・サイクル・送信 =====
+let currentCategory = null;
+let currentMsg = '';
+
+function selectCategory(cat) {
+  vibrate();
+  document.getElementById('phoneSub').classList.remove('active');
+  phoneOpen = false;
+  currentCategory = cat;
+  currentMsg = pickRandom(cat);
+  showSelected();
+}
+
+function cycleMsg() {
+  if (!currentCategory) return;
+  vibrate();
+  if (currentCategory === 'phone') {
+    const mins = document.getElementById('minsVal').textContent;
+    currentMsg = pickRandom('phone', mins);
+  } else {
+    currentMsg = pickRandom(currentCategory);
+  }
+  showSelected();
+}
+
+function doSend() {
+  if (!currentMsg) return;
+  vibrate();
+  openLINE(currentMsg);
+}
+
+function showSelected() {
+  const el = document.getElementById('previewMsg');
+  el.style.opacity = '0';
+  setTimeout(() => {
+    el.textContent = currentMsg;
+    el.style.opacity = '1';
+  }, 80);
+  el.classList.add('tappable');
+  document.getElementById('previewHint').classList.add('visible');
+  document.getElementById('sendLineBtn').classList.add('visible');
+}
+
 // ===== 設定 =====
 function getLineId() {
   return localStorage.getItem('lineId') || '';
@@ -554,15 +633,12 @@ function getLineId() {
 function updateBadge() {
   const id = getLineId();
   const badge = document.getElementById('recipientBadge');
-  const footer = document.getElementById('footerText');
   if (id) {
     badge.textContent = `→ ${id}`;
     badge.className = 'recipient-badge';
-    footer.textContent = 'ボタン → コピー＆チャットを開く';
   } else {
     badge.textContent = '送信先未設定';
     badge.className = 'recipient-badge none';
-    footer.textContent = 'ボタン → ランダムメッセージ → LINE送信画面';
   }
 }
 function openSettings() {
@@ -603,49 +679,34 @@ function openLINE(text) {
   }
 }
 
-// ===== 送信処理 =====
-function send(category) {
-  vibrate();
-  document.getElementById('phoneSub').classList.remove('active');
-  phoneOpen = false;
-  const msg = pickRandom(category);
-  showPreview(msg);
-  openLINE(msg);
-}
-
 // ===== 電話ボタン =====
 let phoneOpen = false;
 function togglePhone() {
   vibrate();
   phoneOpen = !phoneOpen;
   document.getElementById('phoneSub').classList.toggle('active', phoneOpen);
-  if (phoneOpen) updatePreviewPhone();
+  if (phoneOpen) {
+    currentCategory = 'phone';
+    const mins = document.getElementById('minsVal').textContent;
+    currentMsg = pickRandom('phone', mins);
+    showSelected();
+  }
 }
 function updateMins(val) {
   document.getElementById('minsVal').textContent = val;
-  updatePreviewPhone();
+  if (currentCategory === 'phone') {
+    currentMsg = pickRandom('phone', val);
+    showSelected();
+  }
 }
-function updatePreviewPhone() {
-  const mins = document.getElementById('minsVal').textContent;
-  const msg = pickRandom('phone', mins);
-  showPreview(msg);
-}
-function sendPhone() {
+function confirmPhone() {
   vibrate();
   const mins = document.getElementById('minsVal').textContent;
-  const msg = pickRandom('phone', mins);
-  showPreview(msg);
-  openLINE(msg);
-}
-
-// ===== UI =====
-function showPreview(msg) {
-  const el = document.getElementById('previewMsg');
-  el.style.opacity = '0';
-  setTimeout(() => {
-    el.textContent = msg;
-    el.style.opacity = '1';
-  }, 100);
+  currentCategory = 'phone';
+  currentMsg = pickRandom('phone', mins);
+  document.getElementById('phoneSub').classList.remove('active');
+  phoneOpen = false;
+  showSelected();
 }
 function showToast() {
   const toast = document.getElementById('toast');
